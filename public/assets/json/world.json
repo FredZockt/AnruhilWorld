@@ -293,6 +293,10 @@
         {
          "block":true
         },
+     "23":
+        {
+         "loadNewPart":true
+        },
      "230":
         {
          "block":true
@@ -325,6 +329,10 @@
         {
          "way":true
         },
+     "24":
+        {
+         "loadNewPart":true
+        },
      "240":
         {
          "way":true
@@ -344,6 +352,10 @@
      "248":
         {
          "block":true
+        },
+     "25":
+        {
+         "loadNewPart":true
         },
      "253":
         {
@@ -394,6 +406,14 @@
          "block":true
         },
      "277":
+        {
+         "block":true
+        },
+     "278":
+        {
+         "block":true
+        },
+     "279":
         {
          "block":true
         },
@@ -489,6 +509,14 @@
         {
          "way":true
         },
+     "46":
+        {
+         "loadNewPart":true
+        },
+     "48":
+        {
+         "loadNewPart":true
+        },
      "61":
         {
          "block":true
@@ -504,6 +532,18 @@
      "64":
         {
          "block":true
+        },
+     "69":
+        {
+         "loadNewPart":true
+        },
+     "70":
+        {
+         "loadNewPart":true
+        },
+     "71":
+        {
+         "loadNewPart":true
         },
      "84":
         {
@@ -808,6 +848,10 @@
         {
          "block":"bool"
         },
+     "23":
+        {
+         "loadNewPart":"bool"
+        },
      "230":
         {
          "block":"bool"
@@ -840,6 +884,10 @@
         {
          "way":"bool"
         },
+     "24":
+        {
+         "loadNewPart":"bool"
+        },
      "240":
         {
          "way":"bool"
@@ -859,6 +907,10 @@
      "248":
         {
          "block":"bool"
+        },
+     "25":
+        {
+         "loadNewPart":"bool"
         },
      "253":
         {
@@ -909,6 +961,14 @@
          "block":"bool"
         },
      "277":
+        {
+         "block":"bool"
+        },
+     "278":
+        {
+         "block":"bool"
+        },
+     "279":
         {
          "block":"bool"
         },
@@ -1004,6 +1064,14 @@
         {
          "way":"bool"
         },
+     "46":
+        {
+         "loadNewPart":"bool"
+        },
+     "48":
+        {
+         "loadNewPart":"bool"
+        },
      "61":
         {
          "block":"bool"
@@ -1019,6 +1087,18 @@
      "64":
         {
          "block":"bool"
+        },
+     "69":
+        {
+         "loadNewPart":"bool"
+        },
+     "70":
+        {
+         "loadNewPart":"bool"
+        },
+     "71":
+        {
+         "loadNewPart":"bool"
         },
      "84":
         {

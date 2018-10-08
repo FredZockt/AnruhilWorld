@@ -16,10 +16,7 @@ io.on('connection', function (socket) {
     console.log('a user connected: ', socket.id);
     // create a new player and add it to our players object
     players[socket.id] = {
-        x: 64,
-        y: 64,
-        playerId: socket.id,
-        room: '0-0',
+        playerId: socket.id
     };
     // send the players object to the new player
     //socket.emit('currentPlayers', players);
@@ -29,6 +26,7 @@ io.on('connection', function (socket) {
     // when a player disconnects, remove them from our players object
     socket.on('disconnect', function () {
         delete players[socket.id];
+        console.log('a user disconnected: ', socket.id);
         // emit a message to all players to remove this player
         io.emit('disconnect', socket.id);
     });
@@ -46,7 +44,6 @@ io.on('connection', function (socket) {
 
     socket.on('playerMovedMap', function(newRoom) {
         players[socket.id].room = newRoom.key;
-        console.log(newRoom.recall);
         socket.broadcast.emit('playerChangedPosition', players[socket.id]);
         socket.emit('currentPlayers', players, newRoom.recall);
     })

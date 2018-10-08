@@ -21,4 +21,5 @@ const config = {
     }
 };
 
-let game = new Phaser.Game(config), map, controls, player, newMap, newMapKey, connection, self, obstacleLayer, worldLayer;
+let game = new Phaser.Game(config), map, controls, player, newMap, newMapKey, connection, self, obstacleLayer,
+    worldLayer;

@@ -97,7 +97,7 @@ class newPartScene extends Phaser.Scene {
 
     update(time, delta) {
 
-        var speed = 450;
+        var speed = 50;
 
         if (this.player) {
 

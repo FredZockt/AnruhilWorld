@@ -25,6 +25,10 @@ class preloadScene extends Phaser.Scene {
         this.load.spritesheet('hunter', path + 'assets/sprites/hunter.png', {frameWidth: 64, frameHeight: 64});
         this.load.spritesheet('farmer', path + 'assets/sprites/farmer.png', {frameWidth: 64, frameHeight: 64});
 
+        // item data
+        this.load.image('1001', path + 'assets/items/1001.png', {frameWidth: 64, frameHeight: 64});
+
+        // map data
         for(var mapX = 0; mapX <= 10; mapX++) {
             for(var mapY = 0; mapY <= 10; mapY++) {
                 this.load.tilemapTiledJSON(mapX+'-'+mapY, path + 'assets/json/'+mapX+'-'+mapY+'.json');

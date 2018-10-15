@@ -307,6 +307,9 @@ class newPartScene extends Phaser.Scene {
             self.cameras.main.startFollow(self.player);
             self.player.room = newMap;
             self.player.setDepth(1);
+            self.player.playerObjects = playerInfo.playerObjects;
+
+            this.scene.launch('hudScene');
         } else {
 
             var x = '';

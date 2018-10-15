@@ -16,7 +16,39 @@ io.on('connection', function (socket) {
     console.log('a user connected: ', socket.id);
     // create a new player and add it to our players object
     players[socket.id] = {
-        playerId: socket.id
+        playerId: socket.id,
+        playerObjects: {
+            inventory: [
+                {id: 1001, amount: 1, stack: false, row: 1, slot: 1},
+                {id: 1001, amount: 1, stack: false, row: 1, slot: 2},
+                {id: 1001, amount: 1, stack: false, row: 1, slot: 3},
+                {id: 1001, amount: 1, stack: false, row: 1, slot: 4},
+                {id: 1001, amount: 1, stack: false, row: 2, slot: 1},
+                {id: 1001, amount: 1, stack: false, row: 2, slot: 2},
+                {id: 1001, amount: 1, stack: false, row: 2, slot: 3},
+                {id: 1001, amount: 1, stack: false, row: 2, slot: 4},
+                {id: 1001, amount: 1, stack: false, row: 3, slot: 1},
+                {id: 1001, amount: 1, stack: false, row: 3, slot: 2},
+                {id: 1001, amount: 1, stack: false, row: 3, slot: 3},
+                {id: 1001, amount: 1, stack: false, row: 3, slot: 4},
+                {id: 1001, amount: 1, stack: false, row: 4, slot: 1},
+                {id: 1001, amount: 1, stack: false, row: 4, slot: 2},
+                {id: 1001, amount: 1, stack: false, row: 4, slot: 3},
+                false
+            ],
+            quickSlots: [
+                false,
+                {ref: 2},
+                {ref: 3},
+                {ref: 4},
+                {ref: 5},
+                {ref: 6},
+                {ref: 7},
+                {ref: 8},
+                {ref: 9},
+                false,
+            ]
+        }
     };
     // send the players object to the new player
     //socket.emit('currentPlayers', players);

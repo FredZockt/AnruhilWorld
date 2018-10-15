@@ -25,6 +25,10 @@ class preloadScene extends Phaser.Scene {
         this.load.spritesheet('hunter', path + 'assets/sprites/hunter.png', {frameWidth: 64, frameHeight: 64});
         this.load.spritesheet('farmer', path + 'assets/sprites/farmer.png', {frameWidth: 64, frameHeight: 64});
 
+        // item data
+        this.load.image('1001', path + 'assets/items/1001.png', {frameWidth: 64, frameHeight: 64});
+
+        // map data
         for(var mapX = 0; mapX <= 10; mapX++) {
             for(var mapY = 0; mapY <= 10; mapY++) {
                 this.load.tilemapTiledJSON(mapX+'-'+mapY, path + 'assets/json/'+mapX+'-'+mapY+'.json');
@@ -40,11 +44,7 @@ class preloadScene extends Phaser.Scene {
             left: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
             right: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
             up: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
-            down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
-            b: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.B),
-            speed: 1,
-            zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
-            zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E)
+            down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
         };
         controls = new Phaser.Cameras.Controls.FixedKeyControl(controlConfig);
 
@@ -111,7 +111,6 @@ class preloadScene extends Phaser.Scene {
         });
 
 
-        var self = this;
         this.socket = io();
         this.scene.start('newPartScene', {
             player: this.player,

@@ -9,7 +9,7 @@ const config = {
     height: gameHeight,
     backgroundColor: '#5696A6',
     parent: 'world',
-    scene: [preloadScene, newPartScene],
+    scene: [preloadScene, newPartScene, hudScene],
     pixelArt: true,
     physics: {
         default: "arcade",
@@ -22,4 +22,4 @@ const config = {
 };
 
 let game = new Phaser.Game(config), map, controls, player, newMap, newMapKey, connection, self, obstacleLayer,
-    worldLayer;
+    worldLayer, inventorySlots = [];

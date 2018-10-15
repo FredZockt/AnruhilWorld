@@ -2,7 +2,7 @@ class newPartScene extends Phaser.Scene {
 
     constructor() {
         super({
-            key: 'newPartScene',
+            key: 'newPartScene'
         });
     }
 
@@ -13,7 +13,6 @@ class newPartScene extends Phaser.Scene {
     }
 
     create() {
-        var self = this;
 
         map = this.make.tilemap({key: newMap.coords});
 
@@ -27,38 +26,38 @@ class newPartScene extends Phaser.Scene {
         this.socket = connection;
         this.otherPlayers = this.physics.add.group();
         this.socket.emit('playerMovedMap', {key: newMap.coords, recall: false});
-        this.socket.on('currentPlayers', function (players, recall) {
+        this.socket.on('currentPlayers', (players, recall) => {
 
-            if (players[self.socket.id]) {
+            if (players[this.socket.id]) {
                 if (recall === false) {
-                    self.addPlayer(self, players[self.socket.id], '0-0', obstacleLayer);
+                    this.addPlayer(this, players[this.socket.id], '0-0', obstacleLayer);
                 }
             }
 
-            Object.keys(players).forEach(function (id) {
-                if (players[id].playerId !== self.socket.id) {
-                    self.addOtherPlayers(self, players[id]);
+            Object.keys(players).forEach((id) => {
+                if (players[id].playerId !== this.socket.id) {
+                    this.addOtherPlayers(this, players[id]);
                 }
             });
         });
-        this.socket.on('playerChangedPosition', function (player) {
-            if (self.otherPlayers.getChildren().length === 0 && player.room === self.player.room) {
-                self.addOtherPlayers(self, player);
+        this.socket.on('playerChangedPosition', (player) => {
+            if (this.otherPlayers.getChildren().length === 0 && player.room === this.player.room) {
+                this.addOtherPlayers(this, player);
             } else {
-                self.otherPlayers.getChildren().forEach(function (otherPlayer) {
+                this.otherPlayers.getChildren().forEach((otherPlayer) => {
 
                     if (player.playerId === otherPlayer.playerId) {
                         console.log('changed: ' + otherPlayer.playerId);
 
                         otherPlayer.room = player.room;
-                        if (otherPlayer.room !== self.player.room) {
+                        if (otherPlayer.room !== this.player.room) {
                             otherPlayer.destroy();
                         }
-                    } else if (player.playerId === self.player.playerId) {
+                    } else if (player.playerId === this.player.playerId) {
                         console.log('thats me');
                     } else {
-                        if (player.room === self.player.room) {
-                            self.addOtherPlayers(self, player);
+                        if (player.room === this.player.room) {
+                            this.addOtherPlayers(this, player);
                         }
                     }
 
@@ -66,21 +65,21 @@ class newPartScene extends Phaser.Scene {
                 });
             }
         });
-        this.socket.on('newPlayer', function (playerInfo) {
-            self.addOtherPlayers(self, playerInfo);
+        this.socket.on('newPlayer', (playerInfo) => {
+            this.addOtherPlayers(this, playerInfo);
         });
-        this.socket.on('disconnect', function (playerId) {
+        this.socket.on('disconnect', (playerId) => {
             console.log('Gone:' + playerId);
-            self.otherPlayers.getChildren().forEach(function (otherPlayer) {
+            this.otherPlayers.getChildren().forEach((otherPlayer) => {
                 if (playerId === otherPlayer.playerId) {
                     otherPlayer.destroy();
                 }
             });
         });
-        this.socket.on('playerMoved', function (playerInfo) {
-            self.otherPlayers.getChildren().forEach(function (otherPlayer) {
+        this.socket.on('playerMoved', (playerInfo) => {
+            this.otherPlayers.getChildren().forEach((otherPlayer) => {
                 if (playerInfo.playerId === otherPlayer.playerId) {
-                    if (playerInfo.room === self.player.room) {
+                    if (playerInfo.room === this.player.room) {
                         if (playerInfo.direction.length > 0) {
                             otherPlayer.anims.play("hunter_run_" + playerInfo.direction, true);
                         } else {
@@ -93,6 +92,8 @@ class newPartScene extends Phaser.Scene {
                 }
             });
         });
+
+        //this.scene.start('hudScene');
     }
 
     update(time, delta) {
@@ -306,6 +307,9 @@ class newPartScene extends Phaser.Scene {
             self.cameras.main.startFollow(self.player);
             self.player.room = newMap;
             self.player.setDepth(1);
+            self.player.playerObjects = playerInfo.playerObjects;
+
+            this.scene.launch('hudScene');
         } else {
 
             var x = '';

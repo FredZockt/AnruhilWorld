@@ -40,11 +40,7 @@ class preloadScene extends Phaser.Scene {
             left: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
             right: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
             up: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
-            down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
-            b: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.B),
-            speed: 1,
-            zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
-            zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E)
+            down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
         };
         controls = new Phaser.Cameras.Controls.FixedKeyControl(controlConfig);
 
@@ -111,7 +107,6 @@ class preloadScene extends Phaser.Scene {
         });
 
 
-        var self = this;
         this.socket = io();
         this.scene.start('newPartScene', {
             player: this.player,

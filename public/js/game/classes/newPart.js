@@ -288,7 +288,9 @@ class newPartScene extends Phaser.Scene {
         var tiles = map.addTilesetImage('world', 'tiles');
         worldLayer = newMapObject.createDynamicLayer("worldLayer", tiles, 0, 0);
         obstacleLayer = newMapObject.createDynamicLayer("obstacleLayer", tiles, 0, 0);
-        objectsLayer = newMapObject.createDynamicLayer("objectsLayer", tiles, 0, 0);
+        if(newMapObject.createDynamicLayer("objectsLayer", tiles, 0, 0)) {
+            objectsLayer = newMapObject.createDynamicLayer("objectsLayer", tiles, 0, 0);
+        }
 
         map = newMapObject;
 

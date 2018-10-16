@@ -98,7 +98,7 @@ class newPartScene extends Phaser.Scene {
 
     update(time, delta) {
 
-        var speed = 50;
+        var speed = 250;
 
         if (this.player) {
 
@@ -288,6 +288,7 @@ class newPartScene extends Phaser.Scene {
         var tiles = map.addTilesetImage('world', 'tiles');
         worldLayer = newMapObject.createDynamicLayer("worldLayer", tiles, 0, 0);
         obstacleLayer = newMapObject.createDynamicLayer("obstacleLayer", tiles, 0, 0);
+        objectsLayer = newMapObject.createDynamicLayer("objectsLayer", tiles, 0, 0);
 
         map = newMapObject;
 
@@ -302,7 +303,8 @@ class newPartScene extends Phaser.Scene {
     addPlayer(self, playerInfo, newMap, obstacleLayer, recall) {
 
         if (!self.player) {
-            self.player = self.physics.add.sprite(64, 64, "hunter").setScale(.5);
+            const spawnPoint = map.findObject("objectsLayer", obj => obj.name === "spawn");
+            self.player = self.physics.add.sprite( (spawnPoint.x+12), spawnPoint.y, "hunter").setScale(.45);
             self.physics.add.collider(self.player, obstacleLayer);
             self.cameras.main.startFollow(self.player);
             self.player.room = newMap;

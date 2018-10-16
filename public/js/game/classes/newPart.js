@@ -92,8 +92,6 @@ class newPartScene extends Phaser.Scene {
                 }
             });
         });
-
-        //this.scene.start('hudScene');
     }
 
     update(time, delta) {
@@ -306,7 +304,7 @@ class newPartScene extends Phaser.Scene {
 
         if (!self.player) {
             const spawnPoint = map.findObject("objectsLayer", obj => obj.name === "spawn");
-            self.player = self.physics.add.sprite( (spawnPoint.x+12), spawnPoint.y, "hunter").setScale(.45);
+            self.player = self.physics.add.sprite( (spawnPoint.x+12), spawnPoint.y, "hunter").setScale(.5).setOrigin(.5, .5);
             self.physics.add.collider(self.player, obstacleLayer);
             self.cameras.main.startFollow(self.player);
             self.player.room = newMap;
@@ -340,6 +338,8 @@ class newPartScene extends Phaser.Scene {
             self.player.setPosition(x, y);
             self.player.room = newMap;
         }
+
+        this.addNpcs();
     }
 
     addOtherPlayers(self, playerInfo) {
@@ -355,4 +355,96 @@ class newPartScene extends Phaser.Scene {
             self.otherPlayers.add(otherPlayer);
         }
     }
+
+    addNpcs() {
+        // include easystar
+        this.finder = new EasyStar.js();
+
+        // custom tileIdFinder
+        this.finder.getTileID = function(x, y){
+            var tile = map.getTileAt(x, y, true, 0);
+            return tile.index;
+        };
+
+        // basic npc
+        this.npc = this.physics.add.sprite( 362, 64, "hunter").setScale(.5).setOrigin(.5, .5);
+        this.physics.add.collider(this.npc, obstacleLayer);
+
+        // get complete grid of the map
+        let grid = [];
+        for(let y = 0; y < map.height; y++){
+            let col = [];
+            for(let x = 0; x < map.width; x++){
+                // In each cell we store the ID of the tile, which corresponds
+                // to its index in the tileset of the map ("ID" field in Tiled)
+                col.push(this.finder.getTileID(x,y));
+            }
+            grid.push(col);
+        }
+        this.finder.setGrid(grid);
+
+        // create acceptable tiles
+        let tileset = map.tilesets[0];
+        let properties = tileset.tileProperties;
+        let acceptableTiles = [];
+
+        for(let i = tileset.firstgid-1; i < tileset.total; i++){ // firstgid and total are fields from Tiled that indicate the range of IDs that the tiles can take in that tileset
+            if(!properties.hasOwnProperty(i)) {
+                // If there is no property indicated at all, it means it's a walkable tile
+                acceptableTiles.push(i+1);
+                continue;
+            }
+            if(properties[i]) {
+                if(!properties[i].block) {
+                    acceptableTiles.push(i+1);
+                }
+            }
+            if(properties[i].cost) this.finder.setTileCost(i+1, properties[i].cost); // If there is a cost attached to the tile, let's register it
+        }
+        this.finder.setAcceptableTiles(acceptableTiles);
+
+        // find path method
+        this.finder.findPath(Math.floor(362/32), Math.floor(64/32), Math.floor(460/32), Math.floor(224/32), ( path ) => {
+            if (path === null) {
+                console.warn("Path was not found.");
+            } else {
+                console.log(path);
+                this.moveCharacter(path);
+            }
+        });
+        this.finder.calculate();
+    }
+
+    moveCharacter (path) {
+        // Sets up a list of tweens, one for each tile to walk, that will be chained by the timeline
+        let tweens = [];
+        for(let i = 0; i < path.length-1; i++){
+            let ex = path[i+1].x + .5;
+            let ey = path[i+1].y + .5;
+            tweens.push({
+                targets: this.npc,
+                x: {value: ex*map.tileWidth, duration: 2000},
+                y: {value: ey*map.tileHeight, duration: 2000},
+                callback: () => {
+                    if(this.npc.x > ex*map.tileWidth) {
+                        this.npc.anims.play(this.npc.texture.key+'_run_left');
+                    } else if(this.npc.x < ex*map.tileWidth) {
+                        this.npc.anims.play(this.npc.texture.key+'_run_right');
+                    } else if(this.npc.y > ey*map.tileHeight) {
+                        this.npc.anims.play(this.npc.texture.key+'_run_up');
+                    } else if(this.npc.y < ey*map.tileHeight) {
+                        this.npc.anims.play(this.npc.texture.key+'_run_down');
+                    }
+                }
+            });
+        }
+
+        this.tweens.timeline({
+            tweens: tweens
+        }).setCallback('onComplete', () => {
+            console.log('Done, now emit to server');
+            this.npc.anims.play(this.npc.texture.key+'_stand_front');
+        });
+    }
+
 }

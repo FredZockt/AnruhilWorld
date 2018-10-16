@@ -43,7 +43,7 @@ class hudScene extends Phaser.Scene {
                 quickAccessBarSlots[i] = this.add.graphics();
                 quickAccessBarSlots[i].fillStyle(0x0000ff, .5);
                 quickAccessBarSlots[i].fillRect(((gameWidth / 2) - 392) + (((i) * 64) + ((i) * 16)), gameHeight - 96, 64, 64);
-                quickAccessBarSlots[i].setInteractive(new Phaser.Geom.Rectangle(((gameWidth / 2) - 392) + (((i - 1) * 64) + ((i - 1) * 16)), gameHeight - 96, 64, 64), Phaser.Geom.Rectangle.Contains);
+                quickAccessBarSlots[i].setInteractive(new Phaser.Geom.Rectangle(((gameWidth / 2) - 392) + (((i) * 64) + ((i) * 16)), gameHeight - 96, 64, 64), Phaser.Geom.Rectangle.Contains);
 
             }
             quickAccessBarSlots[i].on('pointerdown', () => {

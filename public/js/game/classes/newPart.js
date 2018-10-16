@@ -304,7 +304,7 @@ class newPartScene extends Phaser.Scene {
 
         if (!self.player) {
             const spawnPoint = map.findObject("objectsLayer", obj => obj.name === "spawn");
-            self.player = self.physics.add.sprite( (spawnPoint.x+12), spawnPoint.y, "hunter").setScale(.5).setOrigin(.5, .5);
+            self.player = self.physics.add.sprite( (spawnPoint.x+12), spawnPoint.y, "hunter").setScale(.4).setOrigin(.4, .4);
             self.physics.add.collider(self.player, obstacleLayer);
             self.cameras.main.startFollow(self.player);
             self.player.room = newMap;
@@ -346,11 +346,12 @@ class newPartScene extends Phaser.Scene {
         if (self.player && playerInfo.room === self.player.room) {
 
             if(!playerInfo.x && !playerInfo.y) {
-                playerInfo.x = 64;
-                playerInfo.y = 64;
+                const spawnPoint = map.findObject("objectsLayer", obj => obj.name === "spawn");
+                playerInfo.x = (spawnPoint.x+12);
+                playerInfo.y = spawnPoint.y;
             }
 
-            const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, "hunter").setScale(.5);
+            const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, "hunter").setScale(.4).setOrigin(.4, .4);
             otherPlayer.playerId = playerInfo.playerId;
             self.otherPlayers.add(otherPlayer);
         }
@@ -367,7 +368,7 @@ class newPartScene extends Phaser.Scene {
         };
 
         // basic npc
-        this.npc = this.physics.add.sprite( 362, 64, "hunter").setScale(.5).setOrigin(.5, .5);
+        this.npc = this.physics.add.sprite( 362, 64, "hunter").setScale(.4).setOrigin(.4, .4);
         this.physics.add.collider(this.npc, obstacleLayer);
 
         // get complete grid of the map

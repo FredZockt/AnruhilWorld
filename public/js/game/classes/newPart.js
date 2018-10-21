@@ -25,6 +25,7 @@ class newPartScene extends Phaser.Scene {
 
         this.socket = connection;
         this.otherPlayers = this.physics.add.group();
+        this.npcs = this.physics.add.group();
         this.socket.emit('playerMovedMap', {key: newMap.coords, recall: false});
         this.socket.on('currentPlayers', (players, recall) => {
 
@@ -91,6 +92,65 @@ class newPartScene extends Phaser.Scene {
                     }
                 }
             });
+        });
+        this.socket.on('currentNpcs', (npcs) => {
+            for(let i = 0; i < npcs.length; i++) {
+                this.addNpcs(npcs[i], i);
+            }
+        });
+        this.socket.on('moveNpc', (npc, target) => {
+            // include easystar
+            this.finder = new EasyStar.js();
+
+            // custom tileIdFinder
+            this.finder.getTileID = function(x, y){
+                var tile = map.getTileAt(x, y, true, 0);
+                return tile.index;
+            };
+
+            // get complete grid of the map
+            let grid = [];
+            for(let y = 0; y < map.height; y++){
+                let col = [];
+                for(let x = 0; x < map.width; x++){
+                    // In each cell we store the ID of the tile, which corresponds
+                    // to its index in the tileset of the map ("ID" field in Tiled)
+                    col.push(this.finder.getTileID(x,y));
+                }
+                grid.push(col);
+            }
+            this.finder.setGrid(grid);
+
+            // create acceptable tiles
+            let tileset = map.tilesets[0];
+            let properties = tileset.tileProperties;
+            let acceptableTiles = [];
+
+            for(let i = tileset.firstgid-1; i < tileset.total; i++){ // firstgid and total are fields from Tiled that indicate the range of IDs that the tiles can take in that tileset
+                if(!properties.hasOwnProperty(i)) {
+                    // If there is no property indicated at all, it means it's a walkable tile
+                    acceptableTiles.push(i+1);
+                    continue;
+                }
+                if(properties[i]) {
+                    if(!properties[i].block) {
+                        acceptableTiles.push(i+1);
+                    }
+                }
+                if(properties[i].cost) this.finder.setTileCost(i+1, properties[i].cost); // If there is a cost attached to the tile, let's register it
+            }
+            this.finder.setAcceptableTiles(acceptableTiles);
+
+            // find path method
+            this.finder.findPath(npc.current.position.x, npc.current.position.x, target.home.x, target.home.y, ( path ) => {
+                if (path === null) {
+                    console.warn("Path was not found.");
+                } else {
+                    console.log(path);
+                    this.moveCharacter(path, npc);
+                }
+            });
+            this.finder.calculate();
         });
     }
 
@@ -339,7 +399,7 @@ class newPartScene extends Phaser.Scene {
             self.player.room = newMap;
         }
 
-        this.addNpcs();
+        this.socket.emit('loadNpcs', {room: self.player.room});
     }
 
     addOtherPlayers(self, playerInfo) {
@@ -357,66 +417,23 @@ class newPartScene extends Phaser.Scene {
         }
     }
 
-    addNpcs() {
-        // include easystar
-        this.finder = new EasyStar.js();
-
-        // custom tileIdFinder
-        this.finder.getTileID = function(x, y){
-            var tile = map.getTileAt(x, y, true, 0);
-            return tile.index;
-        };
-
+    addNpcs(npc, key) {
         // basic npc
-        this.npc = this.physics.add.sprite( 362, 64, "hunter").setScale(.4).setOrigin(.4, .4);
-        this.physics.add.collider(this.npc, obstacleLayer);
-
-        // get complete grid of the map
-        let grid = [];
-        for(let y = 0; y < map.height; y++){
-            let col = [];
-            for(let x = 0; x < map.width; x++){
-                // In each cell we store the ID of the tile, which corresponds
-                // to its index in the tileset of the map ("ID" field in Tiled)
-                col.push(this.finder.getTileID(x,y));
-            }
-            grid.push(col);
-        }
-        this.finder.setGrid(grid);
-
-        // create acceptable tiles
-        let tileset = map.tilesets[0];
-        let properties = tileset.tileProperties;
-        let acceptableTiles = [];
-
-        for(let i = tileset.firstgid-1; i < tileset.total; i++){ // firstgid and total are fields from Tiled that indicate the range of IDs that the tiles can take in that tileset
-            if(!properties.hasOwnProperty(i)) {
-                // If there is no property indicated at all, it means it's a walkable tile
-                acceptableTiles.push(i+1);
-                continue;
-            }
-            if(properties[i]) {
-                if(!properties[i].block) {
-                    acceptableTiles.push(i+1);
-                }
-            }
-            if(properties[i].cost) this.finder.setTileCost(i+1, properties[i].cost); // If there is a cost attached to the tile, let's register it
-        }
-        this.finder.setAcceptableTiles(acceptableTiles);
-
-        // find path method
-        this.finder.findPath(Math.floor(362/32), Math.floor(64/32), Math.floor(460/32), Math.floor(224/32), ( path ) => {
-            if (path === null) {
-                console.warn("Path was not found.");
-            } else {
-                console.log(path);
-                this.moveCharacter(path);
-            }
-        });
-        this.finder.calculate();
+        let newNpc = this.physics.add.sprite( (npc.current.position.x*32+16), (npc.current.position.y*32+16), npc.sprite).setScale(.4).setOrigin(.4, .4);
+        this.physics.add.collider(newNpc, obstacleLayer);
+        newNpc.anims.play(npc.sprite + npc.startPosition);
+        newNpc.id = npc.id;
+        this.npcs.add(newNpc);
     }
 
-    moveCharacter (path) {
+    moveCharacter (path, movingNpc) {
+        this.npc = {};
+        this.npcs.getChildren().forEach((npc) => {
+            if (npc.id === movingNpc.id) {
+                this.npc = npc;
+            }
+        });
+
         // Sets up a list of tweens, one for each tile to walk, that will be chained by the timeline
         let tweens = [];
         for(let i = 0; i < path.length-1; i++){
@@ -444,7 +461,7 @@ class newPartScene extends Phaser.Scene {
             tweens: tweens
         }).setCallback('onComplete', () => {
             console.log('Done, now emit to server');
-            this.npc.anims.play(this.npc.texture.key+'_stand_front');
+            this.npc.anims.play(movingNpc.sprite+'_stand_front');
         });
     }
 
